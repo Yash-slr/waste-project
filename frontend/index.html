@@ -4,133 +4,188 @@
     <meta charset="UTF-8">
     <title>Waste Management System</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; }
+        body { font-family: sans-serif; padding: 20px; background-color: #f9f9f9; }
         h1 { color: #16a085; text-align: center; }
-        /* Box styles */
-        #status-box, #form-box, #pickups-box {
-            background-color: #f0f0f0;
-            border: 2px solid #ddd;
+        h2 { border-bottom: 2px solid #16a085; padding-bottom: 5px; }
+  
+        .container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .panel {
+            background-color: #fff;
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
-            margin: 20px auto;
-            max-width: 500px; /* Made wider for the list */
+            width: 45%;
+            min-width: 400px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        #status-box strong { color: #2c3e50; }
-        /* Form styles */
+        
+        #status-box { text-align: center; background-color: #f0f0f0; padding: 15px; border-radius: 8px; }
+    
         input[type="text"] { width: 95%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
         button { background-color: #16a085; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background-color: #1abc9c; }
-        #form-message { margin-top: 10px; font-weight: bold; }
-        /* NEW: Pickup list styles */
-        #pickups-list { list-style: none; padding: 0; }
-        #pickups-list li { background-color: #fff; border: 1px solid #ccc; padding: 10px; margin-bottom: 8px; border-radius: 4px; }
-        #pickups-list li strong { color: #333; }
+        
+        .pickup-list { list-style: none; padding: 0; }
+        .pickup-list li { background-color: #fafafa; border: 1px solid #ccc; padding: 10px; margin-bottom: 8px; border-radius: 4px; }
+        .pickup-list li strong { color: #333; }
+        
+        .complete-btn {
+            background-color: #3498db;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            float: right;
+        }
+        .complete-btn:hover { background-color: #2980b9; }
     </style>
 </head>
 <body>
     <h1>Inorganic Waste & Scrap Management System</h1>
-    
-    <div id="status-box">
-        <strong>Backend Status:</strong> 
-        <span id="backend-message">Connecting...</span>
-    </div>
+    <div id="status-box"><strong>Backend Status:</strong> <span id="backend-message">Connecting...</span></div>
 
-    <div id="form-box">
-        <h2>Schedule a New Pickup</h2>
-        <form id="pickup-form">
-            <div>
-                <label for="wasteType">Waste Type:</label>
-                <input type="text" id="wasteType" name="wasteType" placeholder="e.g., Plastic, E-waste, Metal" required>
+    <div class="container">
+        <div class="panel" id="user-panel">
+            <h2>User Panel</h2>
+            <div id="form-box">
+                <h3>Schedule a New Pickup</h3>
+                <form id="pickup-form">
+                    <div>
+                        <label for="wasteType">Waste Type:</label>
+                        <input type="text" id="wasteType" name="wasteType" placeholder="e.g., Plastic, E-waste" required>
+                    </div>
+                    <div>
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" placeholder="e.g., 123 Main St" required>
+                    </div>
+                    <button type="submit">Schedule Pickup</button>
+                </form>
+                <p id="form-message" style="font-weight: bold;"></p>
             </div>
-            <div>
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" placeholder="e.g., 123 Main St" required>
-            </div>
-            <button type="submit">Schedule Pickup</button>
-        </form>
-        <p id="form-message"></p>
-    </div>
+        </div>
 
-    <div id="pickups-box">
-        <h2>Current Scheduled Pickups</h2>
-        <ul id="pickups-list">
-            <li>Loading pickups...</li>
-        </ul>
+        <div class="panel" id="admin-panel">
+            <h2>Admin Panel (All Pickups)</h2>
+            <div id="pickups-box">
+                <button id="refresh-btn">Refresh List</button>
+                <ul id="admin-pickups-list" class="pickup-list">
+                    <li>Loading pickups...</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
-      
         const backendUrl = 'https://yash-slr-waste-project.onrender.com'; 
 
         const messageElement = document.getElementById('backend-message');
         const form = document.getElementById('pickup-form');
         const formMessage = document.getElementById('form-message');
-        const pickupsList = document.getElementById('pickups-list'); 
+        const adminPickupsList = document.getElementById('admin-pickups-list');
+        const refreshBtn = document.getElementById('refresh-btn');
 
         function fetchAllPickups() {
-            pickupsList.innerHTML = '<li>Loading pickups...</li>'; 
+            adminPickupsList.innerHTML = '<li>Loading pickups...</li>';
             
             fetch(backendUrl + '/api/pickups')
                 .then(response => response.json())
                 .then(data => {
-                    pickupsList.innerHTML = ''; 
+                    adminPickupsList.innerHTML = ''; 
                     if (data.length === 0) {
-                        pickupsList.innerHTML = '<li>No pickups scheduled yet.</li>';
+                        adminPickupsList.innerHTML = '<li>No pickups scheduled yet.</li>';
                         return;
                     }
                     
                     data.forEach(pickup => {
                         const li = document.createElement('li');
-                        li.innerHTML = `<strong>${pickup.wasteType}</strong> (Status: ${pickup.status})<br>Address: ${pickup.address}`;
-                        pickupsList.appendChild(li);
+                      
+                        li.dataset.id = pickup._id; 
+                        
+                        let statusColor = pickup.status === 'Pending' ? 'orange' : 'green';
+                        li.innerHTML = `
+                            <strong>${pickup.wasteType}</strong><br>
+                            Address: ${pickup.address}<br>
+                            Status: <span style="color:${statusColor}; font-weight:bold;">${pickup.status}</span>
+                        `;
+                        
+                        if (pickup.status === 'Pending') {
+                            const completeBtn = document.createElement('button');
+                            completeBtn.textContent = 'Mark as Completed';
+                            completeBtn.className = 'complete-btn';
+                            li.appendChild(completeBtn);
+                        }
+                        
+                        adminPickupsList.appendChild(li);
                     });
                 })
                 .catch(error => {
-                    console.error('Error fetching pickups:', error);
-                    pickupsList.innerHTML = '<li>Could not load pickups.</li>';
+                    adminPickupsList.innerHTML = '<li>Could not load pickups.</li>';
                 });
+        }
+        
+        function completePickup(pickupId) {
+         
+            fetch(`${backendUrl}/api/pickups/${pickupId}/complete`, {
+                method: 'PATCH'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.message) {
+                    console.log(data.message);
+                    fetchAllPickups();
+                }
+            })
+            .catch(error => {
+                console.error('Error completing pickup:', error);
+                alert('Error: Could not complete pickup.');
+            });
         }
 
         window.addEventListener('load', () => {
-         
             fetch(backendUrl)
                 .then(response => response.text())
-                .then(data => {
-                    messageElement.textContent = data;
-                    messageElement.style.color = 'green';
-                })
-                .catch(error => {
-                    messageElement.textContent = 'Could not connect to backend.';
-                    messageElement.style.color = 'red';
-                });
-        
+                .then(data => { messageElement.textContent = data; messageElement.style.color = 'green'; })
+                .catch(error => { messageElement.textContent = 'Could not connect.'; messageElement.style.color = 'red'; });
+            
             fetchAllPickups();
         });
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-            const wasteType = document.getElementById('wasteType').value;
-            const address = document.getElementById('address').value;
-            
             formMessage.textContent = 'Submitting...';
-            formMessage.style.color = 'gray';
-
+            
             fetch(backendUrl + '/api/schedule', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ wasteType: wasteType, address: address }),
+                body: JSON.stringify({ 
+                    wasteType: document.getElementById('wasteType').value, 
+                    address: document.getElementById('address').value 
+                }),
             })
             .then(response => response.json())
             .then(data => {
                 formMessage.textContent = data.message;
                 formMessage.style.color = 'green';
                 form.reset();
-                fetchAllPickups(); 
+                fetchAllPickups(); // Refresh the admin list!
             })
             .catch(error => {
                 formMessage.textContent = 'Error: ' + error.message;
                 formMessage.style.color = 'red';
             });
+        });
+        
+        refreshBtn.addEventListener('click', fetchAllPickups);
+        
+        adminPickupsList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('complete-btn')) {
+                const pickupLi = event.target.closest('li');
+                const pickupId = pickupLi.dataset.id;
+                completePickup(pickupId);
+            }
         });
     </script>
 </body>
