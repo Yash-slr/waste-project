@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => console.log('Database connected successfully!'))
   .catch((err) => console.error('Database connection error:', err));
@@ -48,24 +49,30 @@ app.post('/api/schedule', async (req, res) => {
 
 app.patch('/api/pickups/:id/complete', async (req, res) => {
   try {
-    const pickupId = req.params.id; 
-    
     const updatedPickup = await Pickup.findByIdAndUpdate(
-      pickupId,
+      req.params.id,
       { status: 'Completed' },
       { new: true }
     );
-
     if (!updatedPickup) {
       return res.status(404).send({ message: 'Pickup not found' });
     }
-
     res.status(200).send({ message: 'Pickup marked as completed!', pickup: updatedPickup });
   } catch (error) {
     res.status(500).send({ message: 'Error updating pickup', error: error });
   }
 });
 
+app.get('/api/driver/route', async (req, res) => {
+  try {
+    const pendingPickups = await Pickup.find({ status: 'Pending' })
+                                         .sort({ address: 1 }); // Sort by address (A-Z)
+    
+    res.status(200).send(pendingPickups);
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching route', error: error });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
