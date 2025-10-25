@@ -1,16 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-g">
+    <meta charset="UTF-8">
     <title>Waste Management System</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 40px; }
         h1 { color: #16a085; }
+        /* Style for our new status box */
+        #status-box {
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 1.1em;
+        }
+        #status-box strong {
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
     <h1>Inorganic Waste & Scrap Management System</h1>
     <p>Welcome to our Hackathon Project!</p>
-    <p>This page is live!</p>
+    
+    <div id="status-box">
+        <strong>Backend Status:</strong> 
+        <span id="backend-message">Connecting...</span>
+    </div>
+
+    <script>
+        // PASTE YOUR LIVE RENDER URL HERE
+        const backendUrl = 'https://yash-slr-waste-project.onrender.com/'; 
+
+        // Run this code when the page finishes loading
+        window.addEventListener('load', () => {
+            const messageElement = document.getElementById('backend-message');
+            
+            // Try to "fetch" data from the backend
+            fetch(backendUrl)
+                .then(response => {
+                    // Check if the connection was successful
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // Get the text message from the backend
+                })
+                .then(data => {
+                    // Success! Show the message from the backend
+                    messageElement.textContent = data;
+                    messageElement.style.color = 'green';
+                })
+                .catch(error => {
+                    // Failed! Show an error message
+                    console.error('Error fetching data:', error);
+                    messageElement.textContent = 'Could not connect to backend. (Check URL?)';
+                    messageElement.style.color = 'red';
+                });
+        });
+    </script>
 </body>
 </html>
