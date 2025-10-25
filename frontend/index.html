@@ -2,126 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Waste Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Management Dashboard</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f9f9f9; }
-        h1 { color: #16a085; text-align: center; }
-        h2 { border-bottom: 2px solid #16a085; padding-bottom: 5px; }
-        
-        /* Layout */
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .panel {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            width: 30%;
-            min-width: 350px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-  
-        #status-box { text-align: center; background-color: #f0f0f0; padding: 15px; border-radius: 8px; max-width: 1100px; margin: 20px auto; }
-
-        input[type="text"] { width: 95%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        button { background-color: #16a085; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #1abc9c; }
-
-        .pickup-list { list-style: none; padding: 0; }
-        .pickup-list li { background-color: #fafafa; border: 1px solid #ccc; padding: 10px; margin-bottom: 8px; border-radius: 4px; }
-        .pickup-list li strong { color: #333; }
-        
-       
-        .complete-btn { background-color: #3498db; padding: 5px 10px; font-size: 0.8em; float: right; }
-        .complete-btn:hover { background-color: #2980b9; }
-
     
-        #route-list { list-style-type: decimal; padding-left: 20px; }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        
+        body {
+            background-color: #f8f9fa; 
+        }
+        .card {
+            margin-bottom: 1.5rem; 
+        }
     </style>
 </head>
 <body>
-    <h1>Inorganic Waste & Scrap Management System</h1>
-    <div id="status-box"><strong>Backend Status:</strong> <span id="backend-message">Connecting...</span></div>
 
-    <div class="container">
-        <div class="panel" id="user-panel">
-            <h2>User Panel</h2>
-            <form id="pickup-form">
-                <h3>Schedule a New Pickup</h3>
-                <label for="wasteType">Waste Type:</label>
-                <input type="text" id="wasteType" name="wasteType" placeholder="e.g., Plastic, E-waste" required>
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" placeholder="e.g., 123 Main St, Anytown" required>
-                <button type="submit">Schedule Pickup</button>
-            </form>
-            <p id="form-message" style="font-weight: bold;"></p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-recycle"></i>
+                Waste Management System
+            </a>
+            <span class="navbar-text" id="status-box">
+                <i class="bi bi-hdd-stack"></i>
+                Backend Status: <span id="backend-message">Connecting...</span>
+            </span>
         </div>
+    </nav>
 
-        <div class="panel" id="admin-panel">
-            <h2>Admin Panel (All Pickups)</h2>
-            <button id="refresh-btn">Refresh Admin List</button>
-            <ul id="admin-pickups-list" class="pickup-list">
-                <li>Loading pickups...</li>
-            </ul>
-        </div>
+    <div class="container mt-4">
+        
+        <div class="row">
 
-        <div class="panel" id="driver-panel">
-            <h2>Driver Panel (Optimized Route)</h2>
-            <button id="get-route-btn">Get My Route</button>
-            <ol id="route-list">
-                <li>Click the button to get your route.</li>
-            </ol>
-        </div>
-    </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success"><i class="bi bi-person-fill-add"></i> User Panel</h5>
+                        <h6 class="card-subtitle mb-3 text-muted">Schedule a New Pickup</h6>
+                        
+                        <form id="pickup-form">
+                            <div class="mb-3">
+                                <label for="wasteType" class="form-label">Waste Type:</label>
+                                <input type="text" class="form-control" id="wasteType" placeholder="e.g., Plastic, E-waste" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address:</label>
+                                <input type="text" class="form-control" id="address" placeholder="e.g., 123 Main St, Anytown" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-send-fill"></i> Schedule Pickup
+                            </button>
+                        </form>
+                        <p id="form-message" class="mt-3 fw-bold"></p>
+                    </div>
+                </div>
+            </div>
 
-    <script>
-        const backendUrl = 'https://yash-slr-waste-project.onrender.com'; 
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary"><i class="bi bi-clipboard-data-fill"></i> Admin Panel</h5>
+                        <h6 class="card-subtitle mb-3 text-muted">All Scheduled Pickups</h6>
+                        
+                        <button id="refresh-btn" class="btn btn-primary btn-sm mb-3">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh List
+                        </button>
+                        
+                        <ul id="admin-pickups-list" class="list-group">
+                            <li class="list-group-item">Loading pickups...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-info"><i class="bi bi-truck-front-fill"></i> Driver Panel</h5>
+                        <h6 class="card-subtitle mb-3 text-muted">Optimized Route (A-Z)</h6>
+                        
+                        <button id="get-route-btn" class="btn btn-info w-100 mb-3">
+                            <i class="bi bi-geo-alt-fill"></i> Get My Route
+                        </button>
+                        
+                        <ol id="route-list" class="list-group list-group-numbered">
+                            <li class="list-group-item">Click the button to get your route.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> <script>
+        const backendUrl = 'https://yash-slr-waste-project.onrender.com';
+     
         const messageElement = document.getElementById('backend-message');
         const form = document.getElementById('pickup-form');
         const formMessage = document.getElementById('form-message');
         const adminPickupsList = document.getElementById('admin-pickups-list');
         const refreshBtn = document.getElementById('refresh-btn');
-        const getRouteBtn = document.getElementById('get-route-btn'); // NEW
-        const routeList = document.getElementById('route-list'); // NEW
+        const getRouteBtn = document.getElementById('get-route-btn');
+        const routeList = document.getElementById('route-list');
 
         function fetchAllPickups() {
-            adminPickupsList.innerHTML = '<li>Loading pickups...</li>';
+            adminPickupsList.innerHTML = '<li class="list-group-item">Loading pickups...</li>';
             fetch(backendUrl + '/api/pickups')
                 .then(response => response.json())
                 .then(data => {
-                    adminPickupsList.innerHTML = ''; 
+                    adminPickupsList.innerHTML = ''; // Clear list
                     if (data.length === 0) {
-                        adminPickupsList.innerHTML = '<li>No pickups scheduled.</li>';
+                        adminPickupsList.innerHTML = '<li class="list-group-item">No pickups scheduled.</li>';
                         return;
                     }
                     data.forEach(pickup => {
                         const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-start';
                         li.dataset.id = pickup._id;
-                        let statusColor = pickup.status === 'Pending' ? 'orange' : 'green';
+                        
+                        let statusColor = pickup.status === 'Pending' ? 'text-warning' : 'text-success';
+                        
                         li.innerHTML = `
-                            <strong>${pickup.wasteType}</strong><br>
-                            Address: ${pickup.address}<br>
-                            Status: <span style="color:${statusColor}; font-weight:bold;">${pickup.status}</span>
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">${pickup.wasteType}</div>
+                                <small>${pickup.address}</small><br>
+                                <span class="fw-bold ${statusColor}">${pickup.status}</span>
+                            </div>
                         `;
+                        
                         if (pickup.status === 'Pending') {
                             const completeBtn = document.createElement('button');
-                            completeBtn.textContent = 'Mark as Completed';
-                            completeBtn.className = 'complete-btn';
+                            completeBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            completeBtn.className = 'btn btn-primary btn-sm complete-btn';
                             li.appendChild(completeBtn);
                         }
                         adminPickupsList.appendChild(li);
                     });
                 })
-                .catch(error => { adminPickupsList.innerHTML = '<li>Could not load pickups.</li>'; });
+                .catch(error => { adminPickupsList.innerHTML = '<li class="list-group-item list-group-item-danger">Could not load pickups.</li>'; });
         }
         
         function completePickup(pickupId) {
@@ -129,43 +149,51 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.message) {
-                        fetchAllPickups(); 
+                        fetchAllPickups(); // Refresh the list
                     }
                 })
                 .catch(error => { alert('Error: Could not complete pickup.'); });
         }
 
         function fetchOptimizedRoute() {
-            routeList.innerHTML = '<li>Calculating route...</li>';
+            routeList.innerHTML = '<li class="list-group-item">Calculating route...</li>';
             fetch(backendUrl + '/api/driver/route')
                 .then(response => response.json())
                 .then(data => {
-                    routeList.innerHTML = ''; 
+                    routeList.innerHTML = ''; // Clear list
                     if (data.length === 0) {
-                        routeList.innerHTML = '<li>No pending pickups. You are all clear!</li>';
+                        routeList.innerHTML = '<li class="list-group-item">No pending pickups. You are all clear!</li>';
                         return;
                     }
                     data.forEach(pickup => {
                         const li = document.createElement('li');
+                        li.className = 'list-group-item';
                         li.innerHTML = `<strong>${pickup.address}</strong> (${pickup.wasteType})`;
                         routeList.appendChild(li);
                     });
                 })
-                .catch(error => { routeList.innerHTML = '<li>Could not fetch route.</li>'; });
+                .catch(error => { routeList.innerHTML = '<li class="list-group-item list-group-item-danger">Could not fetch route.</li>'; });
         }
 
         window.addEventListener('load', () => {
             fetch(backendUrl)
                 .then(response => response.text())
-                .then(data => { messageElement.textContent = data; messageElement.style.color = 'green'; })
-                .catch(error => { messageElement.textContent = 'Could not connect.'; messageElement.style.color = 'red'; });
+                .then(data => { 
+                    messageElement.textContent = "Connected";
+                    messageElement.className = 'text-white';
+                })
+                .catch(error => { 
+                    messageElement.textContent = 'Connection Failed'; 
+                    messageElement.className = 'text-warning';
+                });
             
-            fetchAllPickups(); 
+            fetchAllPickups(); // Load the admin list
         });
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             formMessage.textContent = 'Submitting...';
+            formMessage.className = 'text-muted';
             
             fetch(backendUrl + '/api/schedule', {
                 method: 'POST',
@@ -178,21 +206,23 @@
             .then(response => response.json())
             .then(data => {
                 formMessage.textContent = data.message;
-                formMessage.style.color = 'green';
+                formMessage.className = 'text-success';
                 form.reset();
                 fetchAllPickups(); // Refresh the admin list
             })
             .catch(error => {
                 formMessage.textContent = 'Error: ' + error.message;
-                formMessage.style.color = 'red';
+                formMessage.className = 'text-danger';
             });
         });
         
         refreshBtn.addEventListener('click', fetchAllPickups);
         
         adminPickupsList.addEventListener('click', (event) => {
-            if (event.target.classList.contains('complete-btn')) {
-                const pickupLi = event.target.closest('li');
+          
+            const clickedButton = event.target.closest('.complete-btn');
+            if (clickedButton) {
+                const pickupLi = clickedButton.closest('li');
                 completePickup(pickupLi.dataset.id);
             }
         });
@@ -200,6 +230,7 @@
         getRouteBtn.addEventListener('click', fetchOptimizedRoute);
 
     </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
