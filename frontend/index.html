@@ -6,57 +6,99 @@
     <style>
         body { font-family: sans-serif; text-align: center; padding: 40px; }
         h1 { color: #16a085; }
-        /* Style for our new status box */
-        #status-box {
+        #status-box, #form-box {
             background-color: #f0f0f0;
             border: 2px solid #ddd;
             border-radius: 8px;
             padding: 20px;
-            margin-top: 30px;
-            font-size: 1.1em;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 400px;
+            margin: 20px auto;
         }
-        #status-box strong {
-            color: #2c3e50;
-        }
+        #status-box strong { color: #2c3e50; }
+        /* Form styles */
+        input[type="text"] { width: 95%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        button { background-color: #16a085; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #1abc9c; }
+        #form-message { margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>Inorganic Waste & Scrap Management System</h1>
-    <p>Welcome to our Hackathon Project!</p>
     
     <div id="status-box">
         <strong>Backend Status:</strong> 
         <span id="backend-message">Connecting...</span>
     </div>
 
+    <div id="form-box">
+        <h2>Schedule a New Pickup</h2>
+        <form id="pickup-form">
+            <div>
+                <label for="wasteType">Waste Type:</label>
+                <input type="text" id="wasteType" name="wasteType" placeholder="e.g., Plastic, E-waste, Metal" required>
+            </div>
+            <div>
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" placeholder="e.g., 123 Main St" required>
+            </div>
+            <button type="submit">Schedule Pickup</button>
+        </form>
+        <p id="form-message"></p>
+    </div>
+
     <script>
-        // PASTE YOUR LIVE RENDER URL HERE
         const backendUrl = 'https://yash-slr-waste-project.onrender.com/'; 
 
-        // Run this code when the page finishes loading
         window.addEventListener('load', () => {
-            const messageElement = document.getElementById('backend-message');
-            
-            // Try to "fetch" data from the backend
             fetch(backendUrl)
-                .then(response => {
-                    // Check if the connection was successful
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text(); // Get the text message from the backend
-                })
+                .then(response => response.text())
                 .then(data => {
-                    // Success! Show the message from the backend
-                    messageElement.textContent = data;
-                    messageElement.style.color = 'green';
+                    document.getElementById('backend-message').textContent = data;
+                    document.getElementById('backend-message').style.color = 'green';
                 })
                 .catch(error => {
-                    // Failed! Show an error message
-                    console.error('Error fetching data:', error);
-                    messageElement.textContent = 'Could not connect to backend. (Check URL?)';
-                    messageElement.style.color = 'red';
+                    document.getElementById('backend-message').textContent = 'Could not connect to backend.';
+                    document.getElementById('backend-message').style.color = 'red';
                 });
+        });
+
+        const form = document.getElementById('pickup-form');
+        const formMessage = document.getElementById('form-message');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); 
+            
+            const wasteType = document.getElementById('wasteType').value;
+            const address = document.getElementById('address').value;
+          
+            formMessage.textContent = 'Submitting...';
+            formMessage.style.color = 'gray';
+
+            fetch(backendUrl + '/api/schedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ wasteType: wasteType, address: address }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Success!
+                    formMessage.textContent = data.message;
+                    formMessage.style.color = 'green';
+                    form.reset(); // Clear the form
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            })
+            .catch(error => {
+                // Failed
+                formMessage.textContent = 'Error: ' + error.message;
+                formMessage.style.color = 'red';
+            });
         });
     </script>
 </body>
