@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <title>Waste Management System</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 40px; }
-        h1 { color: #16a085; }
-        #status-box, #form-box {
+        body { font-family: sans-serif; padding: 40px; }
+        h1 { color: #16a085; text-align: center; }
+        /* Box styles */
+        #status-box, #form-box, #pickups-box {
             background-color: #f0f0f0;
             border: 2px solid #ddd;
             border-radius: 8px;
             padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-            max-width: 400px;
             margin: 20px auto;
+            max-width: 500px; /* Made wider for the list */
         }
         #status-box strong { color: #2c3e50; }
         /* Form styles */
@@ -22,6 +21,10 @@
         button { background-color: #16a085; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background-color: #1abc9c; }
         #form-message { margin-top: 10px; font-weight: bold; }
+        /* NEW: Pickup list styles */
+        #pickups-list { list-style: none; padding: 0; }
+        #pickups-list li { background-color: #fff; border: 1px solid #ccc; padding: 10px; margin-bottom: 8px; border-radius: 4px; }
+        #pickups-list li strong { color: #333; }
     </style>
 </head>
 <body>
@@ -48,54 +51,83 @@
         <p id="form-message"></p>
     </div>
 
+    <div id="pickups-box">
+        <h2>Current Scheduled Pickups</h2>
+        <ul id="pickups-list">
+            <li>Loading pickups...</li>
+        </ul>
+    </div>
+
     <script>
-        const backendUrl = 'https://yash-slr-waste-project.onrender.com'; 
+      
+        const backendUrl = 'YOUR_BACKEND_URL_HERE'; 
+
+        const messageElement = document.getElementById('backend-message');
+        const form = document.getElementById('pickup-form');
+        const formMessage = document.getElementById('form-message');
+        const pickupsList = document.getElementById('pickups-list'); 
+
+        function fetchAllPickups() {
+            pickupsList.innerHTML = '<li>Loading pickups...</li>'; 
+            
+            fetch(backendUrl + '/api/pickups')
+                .then(response => response.json())
+                .then(data => {
+                    pickupsList.innerHTML = ''; 
+                    if (data.length === 0) {
+                        pickupsList.innerHTML = '<li>No pickups scheduled yet.</li>';
+                        return;
+                    }
+                    
+                    data.forEach(pickup => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${pickup.wasteType}</strong> (Status: ${pickup.status})<br>Address: ${pickup.address}`;
+                        pickupsList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching pickups:', error);
+                    pickupsList.innerHTML = '<li>Could not load pickups.</li>';
+                });
+        }
 
         window.addEventListener('load', () => {
+         
             fetch(backendUrl)
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById('backend-message').textContent = data;
-                    document.getElementById('backend-message').style.color = 'green';
+                    messageElement.textContent = data;
+                    messageElement.style.color = 'green';
                 })
                 .catch(error => {
-                    document.getElementById('backend-message').textContent = 'Could not connect to backend.';
-                    document.getElementById('backend-message').style.color = 'red';
+                    messageElement.textContent = 'Could not connect to backend.';
+                    messageElement.style.color = 'red';
                 });
+        
+            fetchAllPickups();
         });
 
-        const form = document.getElementById('pickup-form');
-        const formMessage = document.getElementById('form-message');
-
         form.addEventListener('submit', (event) => {
-            event.preventDefault(); 
-            
+            event.preventDefault();
             const wasteType = document.getElementById('wasteType').value;
             const address = document.getElementById('address').value;
-          
+            
             formMessage.textContent = 'Submitting...';
             formMessage.style.color = 'gray';
 
             fetch(backendUrl + '/api/schedule', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ wasteType: wasteType, address: address }),
             })
             .then(response => response.json())
             .then(data => {
-                if (data.message) {
-                    // Success!
-                    formMessage.textContent = data.message;
-                    formMessage.style.color = 'green';
-                    form.reset(); // Clear the form
-                } else {
-                    throw new Error(data.message || 'Unknown error');
-                }
+                formMessage.textContent = data.message;
+                formMessage.style.color = 'green';
+                form.reset();
+                fetchAllPickups(); 
             })
             .catch(error => {
-                // Failed
                 formMessage.textContent = 'Error: ' + error.message;
                 formMessage.style.color = 'red';
             });
