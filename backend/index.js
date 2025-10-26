@@ -124,7 +124,7 @@ app.get('/api/driver/route', async (req, res) => {
     let response;
     try {
       response = await axios.post(optimizationApiUrl, optimizationRequest);
-    } catch (apiError)D {
+    } catch (apiError) {
       console.error("GraphHopper API Error:", apiError.response.data);
       throw new Error('Error from routing API: ' + apiError.response.data.message);
     }
