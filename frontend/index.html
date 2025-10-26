@@ -11,10 +11,10 @@
     
     <style>
         body {
-            background-color: #f8f9fa; 
+            background-color: #f8f9fa; /* Light gray background */
         }
         .card {
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.5rem; /* Add space between cards */
         }
     </style>
 </head>
@@ -96,9 +96,11 @@
             </div>
 
         </div> </div> <script>
- 
+        // --- PASTE YOUR RENDER URL HERE ---
         const backendUrl = 'https://yash-slr-waste-project.onrender.com';
-  
+        // ---------------------------------
+
+        // --- Get All Elements ---
         const messageElement = document.getElementById('backend-message');
         const form = document.getElementById('pickup-form');
         const formMessage = document.getElementById('form-message');
@@ -107,10 +109,16 @@
         const getRouteBtn = document.getElementById('get-route-btn');
         const routeList = document.getElementById('route-list');
 
+        // --- 1. ***THIS FUNCTION IS NOW FIXED*** ---
         function fetchAllPickups() {
             adminPickupsList.innerHTML = '<li class="list-group-item">Loading pickups...</li>';
             fetch(backendUrl + '/api/pickups')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.message || 'Server error'); });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     adminPickupsList.innerHTML = ''; // Clear list
                     if (data.length === 0) {
@@ -141,9 +149,13 @@
                         adminPickupsList.appendChild(li);
                     });
                 })
-                .catch(error => { adminPickupsList.innerHTML = '<li class="list-group-item list-group-item-danger">Could not load pickups.</li>'; });
+                .catch(error => { 
+                    console.error('Error fetching admin pickups:', error);
+                    adminPickupsList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not load pickups: ${error.message}</li>`; 
+                });
         }
-    
+        
+        // --- 2. Function to Complete a Pickup (for Admin) ---
         function completePickup(pickupId) {
             fetch(`${backendUrl}/api/pickups/${pickupId}/complete`, { method: 'PATCH' })
                 .then(response => response.json())
@@ -154,28 +166,25 @@
                 })
                 .catch(error => { alert('Error: Could not complete pickup.'); });
         }
+
+        // --- 3. Function to Fetch Optimized Route (for Driver) ---
         function fetchOptimizedRoute() {
             routeList.innerHTML = '<li class="list-group-item">Calculating route...</li>';
             fetch(backendUrl + '/api/driver/route')
                 .then(response => {
                     if (!response.ok) {
-             
                         return response.json().then(err => { throw new Error(err.message); });
                     }
                     return response.json();
                 })
                 .then(data => { 
-                
-                    routeList.innerHTML = ''; 
+                    routeList.innerHTML = ''; // Clear list
                     
-                  ]
                     if (!data.pickups || data.pickups.length === 0) { 
-                        // Show the message from the backend 
                         routeList.innerHTML = `<li class="list-group-item">${data.message || 'No pending pickups.'}</li>`;
                         return;
                     }
-
-                 
+                    
                     data.pickups.forEach(pickup => {
                         const li = document.createElement('li');
                         li.className = 'list-group-item';
@@ -185,11 +194,11 @@
                 })
                 .catch(error => { 
                     console.error('Error fetching route:', error);
-                
                     routeList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not fetch route: ${error.message}</li>`; 
                 });
         }
 
+        // --- 4. On Page Load ---
         window.addEventListener('load', () => {
             fetch(backendUrl)
                 .then(response => response.text())
@@ -205,6 +214,7 @@
             fetchAllPickups(); // Load the admin list
         });
 
+        // --- 5. Event Listener for Form (User) ---
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             formMessage.textContent = 'Submitting...';
@@ -231,10 +241,10 @@
             });
         });
         
+        // --- 6. Event Listeners for Admin Panel ---
         refreshBtn.addEventListener('click', fetchAllPickups);
         
         adminPickupsList.addEventListener('click', (event) => {
-       
             const clickedButton = event.target.closest('.complete-btn');
             if (clickedButton) {
                 const pickupLi = clickedButton.closest('li');
@@ -242,6 +252,7 @@
             }
         });
 
+        // --- 7. Event Listener for Driver Panel ---
         getRouteBtn.addEventListener('click', fetchOptimizedRoute);
 
     </script>
