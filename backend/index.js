@@ -73,15 +73,18 @@ app.patch('/api/pickups/:id/complete', async (req, res) => {
 // --- UPDATED: "GET" Route: Get REAL Optimized Route (for Driver) ---
 app.get('/api/driver/route', async (req, res) => {
   try {
-    // 1. Get all pending pickups
-    const pendingPickups = await Pickup.find({ status: 'Pending' });
+    const pendingPickups = await Pickup.find({ status: 'Pending' })
+                                         .sort({ address: 1 }); // Sort by address (A-Z)
 
-    if (pendingPickups.length === 0) {
-      return res.status(200).send({
-        message: 'No pending pickups. You are all clear!',
-        pickups: []
-      });
-    }
+    // Now send it in the object format the frontend expects
+    res.status(200).send({
+      message: 'Route calculated successfully!',
+      pickups: pendingPickups 
+    });
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching route', error: error });
+  }
+});
 
     // 2. Format the data for the GraphHopper API
     const optimizationRequest = {
