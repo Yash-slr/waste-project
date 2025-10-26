@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const axios = require('axios'); // <-- NEW: Import axios
+const axios = require('axios');
 
 const app = express();
 app.use(cors());
@@ -65,8 +65,7 @@ app.patch('/api/pickups/:id/complete', async (req, res) => {
       return res.status(404).send({ message: 'Pickup not found' });
     }
     res.status(200).send({ message: 'Pickup marked as completed!', pickup: updatedPickup });
-  } catch (error)
- {
+  } catch (error) {
     res.status(500).send({ message: 'Error updating pickup', error: error });
   }
 });
@@ -92,14 +91,14 @@ app.get('/api/driver/route', async (req, res) => {
           location_id: 'depot',
           address: '1 Main St, Anytown' // Driver's starting point
         },
-        type_id: 'car_vehicle_type' // <-- NEW: Reference the vehicle type
+        type_id: 'car_vehicle_type' // <-- Reference the vehicle type
       }],
       
       // --- THIS IS THE FIX ---
       // We must define *how* the vehicle travels.
       vehicle_types: [{
           type_id: 'car_vehicle_type',
-          profile: 'car' // <-- NEW: The missing "profile" parameter!
+          profile: 'car' // <-- The missing "profile" parameter!
       }],
       // ----------------------
 
@@ -124,7 +123,7 @@ app.get('/api/driver/route', async (req, res) => {
     let response;
     try {
       response = await axios.post(optimizationApiUrl, optimizationRequest);
-    } catch (apiError) {
+    } catch (apiError) { // <-- This is the line we fixed before
       console.error("GraphHopper API Error:", apiError.response.data);
       throw new Error('Error from routing API: ' + apiError.response.data.message);
     }
