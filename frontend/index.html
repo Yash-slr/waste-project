@@ -9,26 +9,119 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            background-color: #f8f9fa; /* Light gray background */
+        :root {
+            /* Vibrant Gradients */
+            --green-grad: linear-gradient(to right, #1ddb6a, #15b7b9);
+            --purple-grad: linear-gradient(to right, #8e2de2, #4a00e0);
+            --orange-grad: linear-gradient(to right, #f2994a, #f2c94c);
         }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #121212; /* Dark Mode Background */
+            color: #f0f0f0; /* Light Text */
+            padding-top: 20px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.05) !important; /* Glass effect */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #backend-message.text-white { color: #1ddb6a !important; } /* Connected green */
+        #backend-message.text-warning { color: #f2994a !important; } /* Failed orange */
+
+        /* Glassmorphism Cards */
         .card {
-            margin-bottom: 1.5rem; /* Add space between cards */
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Form Controls */
+        .form-control {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f0f0f0;
+        }
+        .form-control:focus {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-color: #1ddb6a;
+            box-shadow: 0 0 0 0.25rem rgba(29, 219, 106, 0.25);
+            color: #f0f0f0;
+        }
+        .form-label, .card-subtitle {
+            color: #a0a0a0 !important;
+        }
+
+        /* Gradient Text */
+        .grad-text-green {
+            background: var(--green-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grad-text-purple {
+            background: var(--purple-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grad-text-orange {
+            background: var(--orange-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Gradient Buttons */
+        .btn-grad-green {
+            background-image: var(--green-grad);
+            border: none;
+            transition: 0.3s ease;
+        }
+        .btn-grad-purple {
+            background-image: var(--purple-grad);
+            border: none;
+            transition: 0.3s ease;
+        }
+        .btn-grad-orange {
+            background-image: var(--orange-grad);
+            border: none;
+            transition: 0.3s ease;
+        }
+        .btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* List Groups */
+        .list-group-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f0f0f0;
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <nav class="navbar navbar-expand-lg sticky-top mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand text-white" href="#">
                 <i class="bi bi-recycle"></i>
-                Waste Management System
+                <strong>Waste Management</strong>
             </a>
             <span class="navbar-text" id="status-box">
                 <i class="bi bi-hdd-stack"></i>
-                Backend Status: <span id="backend-message">Connecting...</span>
+                Backend: <span id="backend-message">Connecting...</span>
             </span>
         </div>
     </nav>
@@ -40,8 +133,8 @@
             <div class="col-lg-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title text-success"><i class="bi bi-person-fill-add"></i> User Panel</h5>
-                        <h6 class="card-subtitle mb-3 text-muted">Schedule a New Pickup</h6>
+                        <h5 class="card-title fw-bold grad-text-green"><i class="bi bi-person-fill-add"></i> User Panel</h5>
+                        <h6 class="card-subtitle mb-3">Schedule a New Pickup</h6>
                         
                         <form id="pickup-form">
                             <div class="mb-3">
@@ -52,7 +145,7 @@
                                 <label for="address" class="form-label">Address:</label>
                                 <input type="text" class="form-control" id="address" placeholder="e.g., 123 Main St, Anytown" required>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">
+                            <button type="submit" class="btn btn-primary btn-grad-green w-100 text-white fw-bold">
                                 <i class="bi bi-send-fill"></i> Schedule Pickup
                             </button>
                         </form>
@@ -64,10 +157,10 @@
             <div class="col-lg-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title text-primary"><i class="bi bi-clipboard-data-fill"></i> Admin Panel</h5>
-                        <h6 class="card-subtitle mb-3 text-muted">All Scheduled Pickups</h6>
+                        <h5 class="card-title fw-bold grad-text-purple"><i class="bi bi-clipboard-data-fill"></i> Admin Panel</h5>
+                        <h6 class="card-subtitle mb-3">All Scheduled Pickups</h6>
                         
-                        <button id="refresh-btn" class="btn btn-primary btn-sm mb-3">
+                        <button id="refresh-btn" class="btn btn-primary btn-sm btn-grad-purple mb-3 text-white">
                             <i class="bi bi-arrow-clockwise"></i> Refresh List
                         </button>
                         
@@ -81,10 +174,10 @@
             <div class="col-lg-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title text-info"><i class="bi bi-truck-front-fill"></i> Driver Panel</h5>
-                        <h6 class="card-subtitle mb-3 text-muted">Optimized Route</h6>
+                        <h5 class="card-title fw-bold grad-text-orange"><i class="bi bi-truck-front-fill"></i> Driver Panel</h5>
+                        <h6 class="card-subtitle mb-3">My Optimized Route (A-Z)</h6>
                         
-                        <button id="get-route-btn" class="btn btn-info w-100 mb-3">
+                        <button id="get-route-btn" class="btn btn-info w-100 mb-3 btn-grad-orange text-white fw-bold">
                             <i class="bi bi-geo-alt-fill"></i> Get My Route
                         </button>
                         
@@ -109,18 +202,16 @@
         const getRouteBtn = document.getElementById('get-route-btn');
         const routeList = document.getElementById('route-list');
 
-        // --- 1. ***THIS FUNCTION IS NOW FIXED*** ---
+        // --- 1. Function to Fetch/Display All Pickups (for Admin) ---
         function fetchAllPickups() {
             adminPickupsList.innerHTML = '<li class="list-group-item">Loading pickups...</li>';
             fetch(backendUrl + '/api/pickups')
                 .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.message || 'Server error'); });
-                    }
+                    if (!response.ok) { return response.json().then(err => { throw new Error(err.message || 'Server error'); }); }
                     return response.json();
                 })
                 .then(data => {
-                    adminPickupsList.innerHTML = ''; // Clear list
+                    adminPickupsList.innerHTML = ''; 
                     if (data.length === 0) {
                         adminPickupsList.innerHTML = '<li class="list-group-item">No pickups scheduled.</li>';
                         return;
@@ -129,7 +220,6 @@
                         const li = document.createElement('li');
                         li.className = 'list-group-item d-flex justify-content-between align-items-start';
                         li.dataset.id = pickup._id;
-                        
                         let statusColor = pickup.status === 'Pending' ? 'text-warning' : 'text-success';
                         
                         li.innerHTML = `
@@ -143,14 +233,13 @@
                         if (pickup.status === 'Pending') {
                             const completeBtn = document.createElement('button');
                             completeBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
-                            completeBtn.className = 'btn btn-primary btn-sm complete-btn';
+                            completeBtn.className = 'btn btn-primary btn-sm btn-grad-purple text-white complete-btn';
                             li.appendChild(completeBtn);
                         }
                         adminPickupsList.appendChild(li);
                     });
                 })
                 .catch(error => { 
-                    console.error('Error fetching admin pickups:', error);
                     adminPickupsList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not load pickups: ${error.message}</li>`; 
                 });
         }
@@ -160,31 +249,29 @@
             fetch(`${backendUrl}/api/pickups/${pickupId}/complete`, { method: 'PATCH' })
                 .then(response => response.json())
                 .then(data => {
-                    if(data.message) {
-                        fetchAllPickups(); // Refresh the list
-                    }
+                    if(data.message) { fetchAllPickups(); }
                 })
                 .catch(error => { alert('Error: Could not complete pickup.'); });
         }
 
         // --- 3. Function to Fetch Optimized Route (for Driver) ---
+        // THIS IS NOW REVERTED TO THE SIMPLE, WORKING VERSION
         function fetchOptimizedRoute() {
             routeList.innerHTML = '<li class="list-group-item">Calculating route...</li>';
-            fetch(backendUrl + '/api/driver/route')
+            fetch(backendUrl + '/api/driver/route') // This backend route is now simple
                 .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.message); });
-                    }
+                    if (!response.ok) { return response.json().then(err => { throw new Error(err.message); }); }
                     return response.json();
                 })
                 .then(data => { 
-                    routeList.innerHTML = ''; // Clear list
+                    routeList.innerHTML = ''; 
                     
                     if (!data.pickups || data.pickups.length === 0) { 
                         routeList.innerHTML = `<li class="list-group-item">${data.message || 'No pending pickups.'}</li>`;
                         return;
                     }
                     
+                    // data.pickups is now a simple, A-Z sorted array
                     data.pickups.forEach(pickup => {
                         const li = document.createElement('li');
                         li.className = 'list-group-item';
@@ -193,7 +280,6 @@
                     });
                 })
                 .catch(error => { 
-                    console.error('Error fetching route:', error);
                     routeList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not fetch route: ${error.message}</li>`; 
                 });
         }
@@ -211,7 +297,7 @@
                     messageElement.className = 'text-warning';
                 });
             
-            fetchAllPickups(); // Load the admin list
+            fetchAllPickups();
         });
 
         // --- 5. Event Listener for Form (User) ---
@@ -233,7 +319,7 @@
                 formMessage.textContent = data.message;
                 formMessage.className = 'text-success';
                 form.reset();
-                fetchAllPickups(); // Refresh the admin list
+                fetchAllPickups();
             })
             .catch(error => {
                 formMessage.textContent = 'Error: ' + error.message;
