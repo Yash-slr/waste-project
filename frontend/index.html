@@ -6,22 +6,15 @@
     <title>Waste Management Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhpmA9wK4PBuGNjsJbXkjvNMbiYwFqa2/cfw=" crossorigin=""/>
-
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; 
         }
         .card {
-            margin-bottom: 1.5rem;
-        }
-        /* Give the map a defined height */
-        #map {
-            height: 300px;
-            width: 100%;
-            border-radius: 8px;
+            margin-bottom: 1.5rem; 
         }
     </style>
 </head>
@@ -41,6 +34,7 @@
     </nav>
 
     <div class="container mt-4">
+        
         <div class="row">
 
             <div class="col-lg-4">
@@ -56,7 +50,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address:</label>
-                                <input type="text" class="form-control" id="address" placeholder="e.g., 1 Main St, Anytown" required>
+                                <input type="text" class="form-control" id="address" placeholder="e.g., 123 Main St, Anytown" required>
                             </div>
                             <button type="submit" class="btn btn-success w-100">
                                 <i class="bi bi-send-fill"></i> Schedule Pickup
@@ -94,10 +88,6 @@
                             <i class="bi bi-geo-alt-fill"></i> Get My Route
                         </button>
                         
-                        <div id="map-container" class="mb-3">
-                            <div id="map"></div>
-                        </div>
-
                         <ol id="route-list" class="list-group list-group-numbered">
                             <li class="list-group-item">Click the button to get your route.</li>
                         </ol>
@@ -106,13 +96,9 @@
             </div>
 
         </div> </div> <script>
-    
+ 
         const backendUrl = 'https://yash-slr-waste-project.onrender.com';
-       
-        let map = null;
-        let routeLayer = null; 
-        let markersLayer = null; 
-
+  
         const messageElement = document.getElementById('backend-message');
         const form = document.getElementById('pickup-form');
         const formMessage = document.getElementById('form-message');
@@ -126,7 +112,7 @@
             fetch(backendUrl + '/api/pickups')
                 .then(response => response.json())
                 .then(data => {
-                    adminPickupsList.innerHTML = '';
+                    adminPickupsList.innerHTML = ''; // Clear list
                     if (data.length === 0) {
                         adminPickupsList.innerHTML = '<li class="list-group-item">No pickups scheduled.</li>';
                         return;
@@ -135,7 +121,9 @@
                         const li = document.createElement('li');
                         li.className = 'list-group-item d-flex justify-content-between align-items-start';
                         li.dataset.id = pickup._id;
+                        
                         let statusColor = pickup.status === 'Pending' ? 'text-warning' : 'text-success';
+                        
                         li.innerHTML = `
                             <div class="ms-2 me-auto">
                                 <div class="fw-bold">${pickup.wasteType}</div>
@@ -143,6 +131,7 @@
                                 <span class="fw-bold ${statusColor}">${pickup.status}</span>
                             </div>
                         `;
+                        
                         if (pickup.status === 'Pending') {
                             const completeBtn = document.createElement('button');
                             completeBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
@@ -154,108 +143,54 @@
                 })
                 .catch(error => { adminPickupsList.innerHTML = '<li class="list-group-item list-group-item-danger">Could not load pickups.</li>'; });
         }
-        
- 
+    
         function completePickup(pickupId) {
             fetch(`${backendUrl}/api/pickups/${pickupId}/complete`, { method: 'PATCH' })
                 .then(response => response.json())
                 .then(data => {
                     if(data.message) {
-                        fetchAllPickups();
+                        fetchAllPickups(); // Refresh the list
                     }
                 })
                 .catch(error => { alert('Error: Could not complete pickup.'); });
         }
-
-        function decodePolyline(str, precision) {
-            let index = 0,
-                lat = 0,
-                lng = 0,
-                coordinates = [],
-                shift = 0,
-                result = 0,
-                byte = null,
-                latitude_change,
-                longitude_change,
-                factor = Math.pow(10, precision || 5);
-
-            while (index < str.length) {
-                byte = null;
-                shift = 0;
-                result = 0;
-                do {
-                    byte = str.charCodeAt(index++) - 63;
-                    result |= (byte & 0x1f) << shift;
-                    shift += 5;
-                } while (byte >= 0x20);
-                latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-                shift = result = 0;
-                do {
-                    byte = str.charCodeAt(index++) - 63;
-                    result |= (byte & 0x1f) << shift;
-                    shift += 5;
-                } while (byte >= 0x20);
-                longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-                lat += latitude_change;
-                lng += longitude_change;
-                coordinates.push([lat / factor, lng / factor]);
-            }
-            return coordinates;
-        }
-
         function fetchOptimizedRoute() {
             routeList.innerHTML = '<li class="list-group-item">Calculating route...</li>';
-     
-            if (routeLayer) map.removeLayer(routeLayer);
-            if (markersLayer) map.removeLayer(markersLayer);
-
             fetch(backendUrl + '/api/driver/route')
-                .then(response => response.json())
-                .then(data => {
-                    routeList.innerHTML = ''; // Clear list
+                .then(response => {
+                    if (!response.ok) {
+             
+                        return response.json().then(err => { throw new Error(err.message); });
+                    }
+                    return response.json();
+                })
+                .then(data => { 
+                
+                    routeList.innerHTML = ''; 
                     
-                    if (data.pickups.length === 0) {
-                        routeList.innerHTML = '<li class="list-group-item">No pending pickups. You are all clear!</li>';
+                  ]
+                    if (!data.pickups || data.pickups.length === 0) { 
+                        // Show the message from the backend 
+                        routeList.innerHTML = `<li class="list-group-item">${data.message || 'No pending pickups.'}</li>`;
                         return;
                     }
-                
-                    const encodedPolyline = data.routeData.routes[0].geometry;
-          
-                    const routeCoordinates = decodePolyline(encodedPolyline, 5);
-            
-                    routeLayer = L.polyline(routeCoordinates, { color: '#0dcaf0', weight: 5 }).addTo(map);
-               
-                    map.fitBounds(routeLayer.getBounds());
-                    
-                    markersLayer = L.layerGroup().addTo(map); // Create a layer for markers
-                    
-                    let stopNumber = 1;
+
+                 
                     data.pickups.forEach(pickup => {
-                   
                         const li = document.createElement('li');
                         li.className = 'list-group-item';
                         li.innerHTML = `<strong>${pickup.address}</strong> (${pickup.wasteType})`;
                         routeList.appendChild(li);
-
-                        const stopData = data.routeData.routes[0].activities.find(a => a.id === pickup._id.toString());
-                        if (stopData) {
-                            const [lng, lat] = stopData.address.coordinate;
-                           
-                            const marker = L.marker([lat, lng])
-                                .addTo(markersLayer)
-                                .bindPopup(`<b>Stop ${stopNumber}: ${pickup.wasteType}</b><br>${pickup.address}`);
-                            stopNumber++;
-                        }
                     });
                 })
                 .catch(error => { 
-                    console.error(error);
-                    routeList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not fetch route. ${error.message}</li>`; 
+                    console.error('Error fetching route:', error);
+                
+                    routeList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not fetch route: ${error.message}</li>`; 
                 });
         }
 
         window.addEventListener('load', () => {
-     
             fetch(backendUrl)
                 .then(response => response.text())
                 .then(data => { 
@@ -267,13 +202,7 @@
                     messageElement.className = 'text-warning';
                 });
             
-            fetchAllPickups();
-            
-            map = L.map('map').setView([28.6139, 77.2090], 10); 
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+            fetchAllPickups(); // Load the admin list
         });
 
         form.addEventListener('submit', (event) => {
@@ -294,7 +223,7 @@
                 formMessage.textContent = data.message;
                 formMessage.className = 'text-success';
                 form.reset();
-                fetchAllPickups();
+                fetchAllPickups(); // Refresh the admin list
             })
             .catch(error => {
                 formMessage.textContent = 'Error: ' + error.message;
@@ -305,6 +234,7 @@
         refreshBtn.addEventListener('click', fetchAllPickups);
         
         adminPickupsList.addEventListener('click', (event) => {
+       
             const clickedButton = event.target.closest('.complete-btn');
             if (clickedButton) {
                 const pickupLi = clickedButton.closest('li');
@@ -317,7 +247,5 @@
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
 </html>
