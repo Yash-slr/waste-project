@@ -70,9 +70,7 @@ app.post('/api/auth/register', async (req, res) => {
 // --- NEW: "POST" Route for All Logins (User, Admin, Driver) ---
 app.post('/api/auth/login', async (req, res) => {
   try {
-    // --- THIS IS THE LINE WE FIXED ---
     const { email, password } = req.body; 
-    // ---------------------------------
     
     if (!email || !password) {
       return res.status(400).send({ message: 'Email and password are required.' });
@@ -187,7 +185,8 @@ app.patch('/api/pickups/:id/complete', authMiddleware, async (req, res) => {
 
 app.get('/api/driver/route', authMiddleware, async (req, res) => {
   if (req.user.role !== 'driver') {
-    return res.status(4S03).send({ message: 'Access denied. Only Drivers can get a route.' });
+    // --- THIS IS THE LINE WE FIXED ---
+    return res.status(403).send({ message: 'Access denied. Only Drivers can get a route.' });
   }
   
   try {
