@@ -19,7 +19,6 @@
             --purple-grad: linear-gradient(to right, #8e2de2, #4a00e0);
             --orange-grad: linear-gradient(to right, #f2994a, #f2c94c);
         }
-
         body {
             font-family: 'Lexend', sans-serif;
             background-color: #121212;
@@ -33,6 +32,17 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        /* --- THIS IS THE CSS FIX --- */
+        .navbar-text {
+            color: rgba(255, 255, 255, 0.7); /* Lighter text for the welcome message */
+        }
+        .navbar-brand, .navbar-text {
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+        }
+        /* -------------------------- */
+        
         #backend-message.text-white { color: #1ddb6a !important; }
         #backend-message.text-warning { color: #f2994a !important; }
 
@@ -43,9 +53,7 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-        }
+        .card:hover { transform: translateY(-5px); }
 
         /* Form Controls */
         .form-control {
@@ -59,31 +67,26 @@
             box-shadow: 0 0 0 0.25rem rgba(29, 219, 106, 0.25);
             color: #f0f0f0;
         }
-        .form-label, .card-subtitle {
-            color: #a0a0a0 !important;
-        }
+        .form-label, .card-subtitle { color: #a0a0a0 !important; }
 
-        /* Gradient Text */
+        /* Gradients */
         .grad-text-green { background: var(--green-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .grad-text-purple { background: var(--purple-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .grad-text-orange { background: var(--orange-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Gradient Buttons */
         .btn-grad-green { background-image: var(--green-grad); border: none; transition: 0.3s ease; }
         .btn-grad-purple { background-image: var(--purple-grad); border: none; transition: 0.3s ease; }
         .btn-grad-orange { background-image: var(--orange-grad); border: none; transition: 0.3s ease; }
         .btn:hover { transform: scale(1.03); }
 
-        /* List Groups */
+        /* Lists */
         .list-group-item {
             background-color: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #f0f0f0;
         }
         
-        /* NEW: This hides the dashboard by default */
-        #dashboard-container {
-            display: none;
+        #dashboard-container, #register-ngo-card {
+            display: none; /* Hide dashboard and NGO form by default */
         }
     </style>
 </head>
@@ -109,13 +112,14 @@
                         </form>
                         <p id="login-message" class="mt-3 text-center"></p>
                         <hr style="border-color: rgba(255,255,255,0.1);">
-                        <p class="text-center mb-0">No account? <a href="#" id="show-register-link" class="fw-bold grad-text-purple">Register here</a></p>
+                        <p class="text-center mb-0">No account? <a href="#" id="show-register-link" class="fw-bold grad-text-purple">Register as User</a></p>
+                        <p class="text-center mb-0">Are you an NGO? <a href="#" id="show-register-ngo-link" class="fw-bold grad-text-orange">Register here</a></p>
                     </div>
                 </div>
 
                 <div class="card shadow-sm" id="register-card" style="display: none;">
                     <div class="card-body p-4">
-                        <h3 class="card-title text-center fw-bold grad-text-purple mb-4">Register</h3>
+                        <h3 class="card-title text-center fw-bold grad-text-purple mb-4">Register as User</h3>
                         <form id="register-form">
                             <div class="mb-3">
                                 <label for="register-email" class="form-label">Email</label>
@@ -129,7 +133,35 @@
                         </form>
                         <p id="register-message" class="mt-3 text-center"></p>
                         <hr style="border-color: rgba(255,255,255,0.1);">
-                        <p class="text-center mb-0">Already have an account? <a href="#" id="show-login-link" class="fw-bold grad-text-green">Login here</a></p>
+                        <p class="text-center mb-0">Already have an account? <a href="#" class="show-login-link fw-bold grad-text-green">Login here</a></p>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm" id="register-ngo-card" style="display: none;">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center fw-bold grad-text-orange mb-4">Register as NGO</h3>
+                        <form id="register-ngo-form">
+                            <div class="mb-3">
+                                <label for="register-ngo-name" class="form-label">NGO Name</label>
+                                <input type="text" class="form-control" id="register-ngo-name" required>
+                            </div>
+                             <div class="mb-3">
+                                <label for="register-ngo-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="register-ngo-email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="register-ngo-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="register-ngo-password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="register-ngo-desc" class="form-label">Description (Optional)</label>
+                                <textarea class="form-control" id="register-ngo-desc" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-grad-orange w-100 text-white fw-bold">Register NGO</button>
+                        </form>
+                        <p id="register-ngo-message" class="mt-3 text-center"></p>
+                        <hr style="border-color: rgba(255,255,255,0.1);">
+                        <p class="text-center mb-0">Already have an account? <a href="#" class="show-login-link fw-bold grad-text-green">Login here</a></p>
                     </div>
                 </div>
 
@@ -144,9 +176,11 @@
                     <i class="bi bi-recycle"></i>
                     <strong>Waste Management</strong>
                 </a>
-                <span class="navbar-text" id="status-box">
+                
+                <span class="navbar-text me-auto" id="status-box"> 
                     Welcome, <span id="user-email" class="fw-bold">...</span>
                 </span>
+                
                 <button class="btn btn-outline-danger btn-sm" id="logout-btn">
                     <i class="bi bi-box-arrow-right"></i> Logout
                 </button>
@@ -155,66 +189,21 @@
 
         <div class="container mt-4">
             <div class="row">
-
                 <div class="col-lg-4" id="user-panel-col">
                     <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold grad-text-green"><i class="bi bi-person-fill-add"></i> User Panel</h5>
-                            <h6 class="card-subtitle mb-3">Schedule a New Pickup</h6>
-                            
-                            <form id="pickup-form">
-                                <div class="mb-3">
-                                    <label for="wasteType" class="form-label">Waste Type:</label>
-                                    <input type="text" class="form-control" id="wasteType" placeholder="e.g., Plastic, E-waste" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="address" class="form-label">Address:</label>
-                                    <input type="text" class="form-control" id="address" placeholder="e.g., 123 Main St, Anytown" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-grad-green w-100 text-white fw-bold">
-                                    <i class="bi bi-send-fill"></i> Schedule Pickup
-                                </button>
-                            </form>
-                            <p id="form-message" class="mt-3 fw-bold"></p>
                         </div>
-                    </div>
                 </div>
-
                 <div class="col-lg-4" id="admin-panel-col">
                     <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold grad-text-purple"><i class="bi bi-clipboard-data-fill"></i> Admin Panel</h5>
-                            <h6 class="card-subtitle mb-3">All Scheduled Pickups</h6>
-                            
-                            <button id="refresh-btn" class="btn btn-primary btn-sm btn-grad-purple mb-3 text-white">
-                                <i class="bi bi-arrow-clockwise"></i> Refresh List
-                            </button>
-                            
-                            <ul id="admin-pickups-list" class="list-group">
-                                <li class="list-group-item">Loading pickups...</li>
-                            </ul>
                         </div>
-                    </div>
                 </div>
-
                 <div class="col-lg-4" id="driver-panel-col">
                     <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold grad-text-orange"><i class="bi bi-truck-front-fill"></i> Driver Panel</h5>
-                            <h6 class="card-subtitle mb-3">My Optimized Route (A-Z)</h6>
-                            
-                            <button id="get-route-btn" class="btn btn-info w-100 mb-3 btn-grad-orange text-white fw-bold">
-                                <i class="bi bi-geo-alt-fill"></i> Get My Route
-                            </button>
-                            
-                            <ol id="route-list" class="list-group list-group-numbered">
-                                <li class="list-group-item">Click the button to get your route.</li>
-                            </ol>
                         </div>
-                    </div>
                 </div>
-
-            </div> </div> </div>
+                </div>
+        </div>
+    </div>
 
 
     <script>
@@ -222,82 +211,101 @@
         const backendUrl = 'https://yash-slr-waste-project.onrender.com';
         // ---------------------------------
 
-        // --- Get All OLD Elements ---
-        const form = document.getElementById('pickup-form');
+        // --- Get ALL Elements ---
+        const userEmailSpan = document.getElementById('user-email');
+        const authContainer = document.getElementById('auth-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        
+        // Auth Cards
+        const loginCard = document.getElementById('login-card');
+        const registerCard = document.getElementById('register-card');
+        const registerNgoCard = document.getElementById('register-ngo-card'); // NEW
+        
+        // Auth Forms & Messages
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const registerNgoForm = document.getElementById('register-ngo-form'); // NEW
+        const loginMessage = document.getElementById('login-message');
+        const registerMessage = document.getElementById('register-message');
+        const registerNgoMessage = document.getElementById('register-ngo-message'); // NEW
+
+        // Auth Links
+        const showRegisterLink = document.getElementById('show-register-link');
+        const showRegisterNgoLink = document.getElementById('show-register-ngo-link'); // NEW
+        const showLoginLinks = document.querySelectorAll('.show-login-link'); // All "back to login" links
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Dashboard Panels
+        const userPanel = document.getElementById('user-panel-col');
+        const adminPanel = document.getElementById('admin-panel-col');
+        const driverPanel = document.getElementById('driver-panel-col');
+        
+        // Panel Content (Forms, Lists, etc.)
+        const pickupForm = document.getElementById('pickup-form');
         const formMessage = document.getElementById('form-message');
         const adminPickupsList = document.getElementById('admin-pickups-list');
         const refreshBtn = document.getElementById('refresh-btn');
         const getRouteBtn = document.getElementById('get-route-btn');
         const routeList = document.getElementById('route-list');
-        const userEmailSpan = document.getElementById('user-email');
 
-        // --- Get All NEW Elements ---
-        const authContainer = document.getElementById('auth-container');
-        const dashboardContainer = document.getElementById('dashboard-container');
-        const loginCard = document.getElementById('login-card');
-        const registerCard = document.getElementById('register-card');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const loginMessage = document.getElementById('login-message');
-        const registerMessage = document.getElementById('register-message');
-        const showRegisterLink = document.getElementById('show-register-link');
-        const showLoginLink = document.getElementById('show-login-link');
-        const logoutBtn = document.getElementById('logout-btn');
 
-        // --- NEW: Helper function to get token ---
-        function getToken() {
-            return localStorage.getItem('token');
-        }
-
-        // --- NEW: Helper function to handle 401/403 errors (e.g., expired token) ---
+        // --- Helper functions to get token ---
+        function getToken() { return localStorage.getItem('token'); }
+        function getUser() { return JSON.parse(localStorage.getItem('user')); }
+        
+        // --- Helper function to handle 401/403 errors (e.g., expired token) ---
         function handleAuthError(error) {
             console.error('Auth error:', error);
-            // If token is bad, log the user out
-            logout();
+            logout(); // If token is bad, log the user out
         }
         
-        // --- NEW: Helper functions to show/hide pages ---
+        // --- Helper functions to show/hide pages ---
         function showAuth() {
             authContainer.style.display = 'block';
             dashboardContainer.style.display = 'none';
+            loginCard.style.display = 'block';
+            registerCard.style.display = 'none';
+            registerNgoCard.style.display = 'none';
         }
-        function showDashboard(user) {
+        function showDashboard() {
+            const user = getUser();
+            if (!user) {
+                showAuth();
+                return;
+            }
+            
             authContainer.style.display = 'none';
             dashboardContainer.style.display = 'block';
-            
-            // Show user email in navbar
             userEmailSpan.textContent = user.email;
             
-            // --- NEW: Role-based panel visibility ---
-            const userPanel = document.getElementById('user-panel-col');
-            const adminPanel = document.getElementById('admin-panel-col');
-            const driverPanel = document.getElementById('driver-panel-col');
-            
-            // Show all panels by default (we'll hide them based on role)
-            userPanel.style.display = 'block';
-            adminPanel.style.display = 'block';
-            driverPanel.style.display = 'block';
+            // Role-based panel visibility
+            userPanel.style.display = 'none';
+            adminPanel.style.display = 'none';
+            driverPanel.style.display = 'none';
             
             if (user.role === 'user') {
-                adminPanel.style.display = 'none'; // Hide Admin panel
-                driverPanel.style.display = 'none'; // Hide Driver panel
+                userPanel.style.display = 'block';
+                // We'll add the NGO panel here in the next step
             } else if (user.role === 'driver') {
-                userPanel.style.display = 'none'; // Hide User panel
-                adminPanel.style.display = 'none'; // Hide Admin panel
+                driverPanel.style.display = 'block';
             } else if (user.role === 'admin') {
-                // Admin can see all, but maybe not the user form?
-                userPanel.style.display = 'none'; 
+                adminPanel.style.display = 'block';
+            } else if (user.role === 'ngo') {
+                // We'll add the NGO's donation panel here in the next step
+            }
+            
+            // Fetch initial data for their role
+            if (user.role === 'admin') {
+                fetchAllPickups();
             }
         }
 
-        // --- 1. UPDATED: Fetch All Pickups (for Admin) ---
+        // --- 1. Fetch All Pickups (for Admin) ---
         function fetchAllPickups() {
             const token = getToken();
-            if (!token) return;
-
             adminPickupsList.innerHTML = '<li class="list-group-item">Loading pickups...</li>';
             fetch(backendUrl + '/api/pickups', {
-                headers: { 'Authorization': `Bearer ${token}` } // <-- Add token
+                headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(response => {
                 if (response.status === 401 || response.status === 403) { throw new Error('Authorization Failed'); }
@@ -315,237 +323,51 @@
                     li.className = 'list-group-item d-flex justify-content-between align-items-start';
                     li.dataset.id = pickup._id;
                     let statusColor = pickup.status === 'Pending' ? 'text-warning' : 'text-success';
-                    li.innerHTML = `... (same as before) ...`; // Code omitted for brevity
+                    li.innerHTML = `
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${pickup.wasteType}</div>
+                            <small>${pickup.address}</small><br>
+                            <span class="fw-bold ${statusColor}">${pickup.status}</span>
+                        </div>
+                    `;
+                    if (pickup.status === 'Pending') {
+                        const completeBtn = document.createElement('button');
+                        completeBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                        completeBtn.className = 'btn btn-primary btn-sm btn-grad-purple text-white complete-btn';
+                        li.appendChild(completeBtn);
+                    }
                     adminPickupsList.appendChild(li);
                 });
             })
             .catch(error => { 
-                if (error.message === 'Authorization Failed') {
-                    handleAuthError(error);
-                } else {
-                    adminPickupsList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not load pickups: ${error.message}</li>`; 
-                }
+                if (error.message === 'Authorization Failed') handleAuthError(error);
+                else adminPickupsList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not load pickups: ${error.message}</li>`; 
             });
         }
         
-        // --- 2. UPDATED: Complete a Pickup (for Admin) ---
+        // --- 2. Complete a Pickup (for Admin) ---
         function completePickup(pickupId) {
             const token = getToken();
-            if (!token) return;
-
             fetch(`${backendUrl}/api/pickups/${pickupId}/complete`, { 
                 method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` } // <-- Add token
+                headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(response => {
                 if (response.status === 401 || response.status === 403) { throw new Error('Authorization Failed'); }
                 return response.json();
             })
-            .then(data => {
-                if(data.message) { fetchAllPickups(); }
-            })
+            .then(data => { if(data.message) { fetchAllPickups(); } })
             .catch(error => {
-                if (error.message === 'Authorization Failed') {
-                    handleAuthError(error);
-                } else {
-                    alert('Error: Could not complete pickup.'); 
-                }
+                if (error.message === 'Authorization Failed') handleAuthError(error);
+                else alert('Error: Could not complete pickup.'); 
             });
         }
 
-        // --- 3. UPDATED: Fetch Optimized Route (for Driver) ---
+        // --- 3. Fetch Optimized Route (for Driver) ---
         function fetchOptimizedRoute() {
             const token = getToken();
-            if (!token) return;
-
             routeList.innerHTML = '<li class="list-group-item">Calculating route...</li>';
             fetch(backendUrl + '/api/driver/route', {
-                headers: { 'Authorization': `Bearer ${token}` } // <-- Add token
+                headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(response => {
-                if (response.status === 401 || response.status === 403) { throw new Error('Authorization Failed'); }
-                if (!response.ok) { return response.json().then(err => { throw new Error(err.message); }); }
-                return response.json();
-            })
-            .then(data => { 
-                routeList.innerHTML = ''; 
-                if (!data.pickups || data.pickups.length === 0) { 
-                    routeList.innerHTML = `<li class="list-group-item">${data.message || 'No pending pickups.'}</li>`;
-                    return;
-                }
-                data.pickups.forEach(pickup => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item';
-                    li.innerHTML = `<strong>${pickup.address}</strong> (${pickup.wasteType})`;
-                    routeList.appendChild(li);
-                });
-            })
-            .catch(error => { 
-                if (error.message === 'Authorization Failed') {
-                    handleAuthError(error);
-                } else {
-                    routeList.innerHTML = `<li class="list-group-item list-group-item-danger">Could not fetch route: ${error.message}</li>`; 
-                }
-            });
-        }
-
-        // --- 4. UPDATED: On Page Load ---
-        window.addEventListener('load', () => {
-            const token = getToken();
-            const user = JSON.parse(localStorage.getItem('user'));
-
-            if (token && user) {
-                showDashboard(user);
-                // Fetch data based on role
-                if (user.role === 'admin') {
-                    fetchAllPickups();
-                } else if (user.role === 'driver') {
-                    // Driver might need to see all pickups or just their route
-                    // For now, let's just let them click the button
-                }
-            } else {
-                showAuth();
-            }
-        });
-
-        // --- 5. UPDATED: Event Listener for Form (User) ---
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const token = getToken();
-            if (!token) return;
-
-            formMessage.textContent = 'Submitting...';
-            formMessage.className = 'text-muted';
-            
-            fetch(backendUrl + '/api/schedule', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // <-- Add token
-                },
-                body: JSON.stringify({ 
-                    wasteType: document.getElementById('wasteType').value, 
-                    address: document.getElementById('address').value 
-                }),
-            })
-            .then(response => {
-                if (response.status === 401 || response.status === 403) { throw new Error('Authorization Failed'); }
-                return response.json();
-            })
-            .then(data => {
-                formMessage.textContent = data.message;
-                formMessage.className = 'text-success';
-                form.reset();
-                if (JSON.parse(localStorage.getItem('user')).role === 'admin') {
-                    fetchAllPickups(); // Refresh admin list if user is also admin
-                }
-            })
-            .catch(error => {
-                if (error.message === 'Authorization Failed') {
-                    handleAuthError(error);
-                } else {
-                    formMessage.textContent = 'Error: ' + error.message;
-                    formMessage.className = 'text-danger';
-                }
-            });
-        });
-        
-        // --- 6. Event Listeners for Admin Panel ---
-        refreshBtn.addEventListener('click', fetchAllPickups);
-        
-        adminPickupsList.addEventListener('click', (event) => {
-            const clickedButton = event.target.closest('.complete-btn');
-            if (clickedButton) {
-                const pickupLi = clickedButton.closest('li');
-                completePickup(pickupLi.dataset.id);
-            }
-        });
-
-        // --- 7. Event Listener for Driver Panel ---
-        getRouteBtn.addEventListener('click', fetchOptimizedRoute);
-
-        // --- 8. NEW: Event Listeners for Auth ---
-        showRegisterLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginCard.style.display = 'none';
-            registerCard.style.display = 'block';
-        });
-
-        showLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerCard.style.display = 'none';
-            loginCard.style.display = 'block';
-        });
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            fetch(backendUrl + '/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token) {
-                    // LOGIN SUCCESS
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    showDashboard(data.user);
-                    // Fetch initial data for their role
-                    if (data.user.role === 'admin') {
-                        fetchAllPickups();
-                    }
-                } else {
-                    loginMessage.textContent = data.message || 'Login failed.';
-                    loginMessage.className = 'mt-3 text-center text-danger';
-                }
-            })
-            .catch(err => {
-                loginMessage.textContent = 'Server error.';
-                loginMessage.className = 'mt-3 text-center text-danger';
-            });
-        });
-        
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            
-            fetch(backendUrl + '/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message === 'User registered successfully!') {
-                    registerMessage.textContent = data.message + ' Please login.';
-                    registerMessage.className = 'mt-3 text-center text-success';
-                    registerForm.reset();
-                } else {
-                    registerMessage.textContent = data.message || 'Registration failed.';
-                    registerMessage.className = 'mt-3 text-center text-danger';
-                }
-            })
-            .catch(err => {
-                registerMessage.textContent = 'Server error.';
-                registerMessage.className = 'mt-3 text-center text-danger';
-            });
-        });
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            showAuth();
-        }
-
-        logoutBtn.addEventListener('click', logout);
-
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-</html>
