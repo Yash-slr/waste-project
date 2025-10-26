@@ -358,7 +358,22 @@
         showRegisterLink.addEventListener('click', (e) => { /* Unchanged */ });
         showRegisterNgoLink.addEventListener('click', (e) => { /* Unchanged */ });
         showLoginLinks.forEach(link => { link.addEventListener('click', (e) => { /* Unchanged */ }); });
-        loginForm.addEventListener('submit', (e) => { /* Unchanged */ });
+        // Login Form Submit
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log("Login button clicked!"); // <--- ADD THIS LINE
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            loginMessage.textContent = 'Logging in...'; loginMessage.className = 'mt-3 text-center text-muted';
+
+            console.log("Attempting to fetch:", backendUrl + '/api/auth/login'); // <--- ADD THIS LINE
+
+            fetch(backendUrl + '/api/auth/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password })
+            })
+            // ... (rest of the fetch code remains the same)
+        });
         registerNgoForm.addEventListener('submit', (e) => { /* Unchanged */ });
         registerForm.addEventListener('submit', (e) => { /* Unchanged */ });
         logoutBtn.addEventListener('click', logout);
