@@ -123,30 +123,22 @@ app.post('/api/auth/register-ngo', async (req, res) => {
 // --- "POST" Route for All Logins (Same as before) ---
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log("LOGIN ROUTE HIT!"); // <--- Add this line here
+
+    // --- The rest of your existing code inside the try block starts below ---
+    const { email, password } = req.body; 
+    
     if (!email || !password) {
       return res.status(400).send({ message: 'Email and password are required.' });
     }
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      return res.status(400).send({ message: 'Invalid credentials.' });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).send({ message: 'Invalid credentials.' });
-    }
-    const payload = { userId: user._id, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).send({
-      message: 'Login successful!',
-      token: token,
-      user: { email: user.email, role: user.role }
-    });
-  } catch (error) {
+
+    // ... (keep the rest of the try block code) ...
+
+  } catch (error) { // <-- The try block ends here, before the catch
+    console.error('Login route error:', error); // Good idea to log the catch block too
     res.status(500).send({ message: 'Server error: ' + error.message });
   }
-});
-
+}); // <-- The entire app.post function ends here
 // ==============================================
 // --- 3. AUTHENTICATION MIDDLEWARE (Private) ---
 // ==============================================
